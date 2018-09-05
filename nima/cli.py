@@ -30,12 +30,14 @@ def prepare_dataset(path_to_ava_txt, path_to_save_csv, path_to_images):
 @click.option('--num_workers', help='number of reading workers', required=True, type=int)
 @click.option('--num_epoch', help='number of epoch', required=True, type=int)
 @click.option('--init_lr', help='initial learning rate', required=True, type=float)
-def train_model(path_to_save_csv, path_to_images, experiment_dir_name, batch_size, num_workers, num_epoch, init_lr):
+@click.option('--pretrained_model', help='whether to use pretrain-model', required=True, type=bool)
+def train_model(path_to_save_csv, path_to_images, experiment_dir_name, batch_size, num_workers, num_epoch, init_lr, pretrained_model):
     click.echo('Train and Validate model save all logs too tensorboard and params to params.json')
     params = TrainParams(path_to_save_csv=path_to_save_csv, path_to_images=path_to_images,
                          experiment_dir_name=experiment_dir_name, batch_size=batch_size, num_workers=num_workers,
                          num_epoch=num_epoch, init_lr=init_lr)
-    start_train(params)
+    click.echo('Training starts...')
+    start_train(params, pretrained_model)
 
 
 @click.command()
