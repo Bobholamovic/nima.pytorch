@@ -15,6 +15,7 @@ from nima.train.utils import TrainParams, ValidateParams, AverageMeter
 
 use_gpu = torch.cuda.is_available()
 device = torch.device("cuda" if use_gpu else "cpu")
+print(f"Using device: {device}")
 
 
 def train(model, loader, optimizer, criterion, writer=None, global_step=None, name=None):
@@ -78,9 +79,9 @@ def _create_val_data_part(params: TrainParams):
     return val_loader, test_loader
 
 
-def start_train(params: TrainParams):
+def start_train(params: TrainParams, pretrained_model):
     train_loader, val_loader = _create_train_data_part(params=params)
-    model = NIMA()
+    model = NIMA(pretrained_model)
     optimizer = torch.optim.Adam(model.parameters(), lr=params.init_lr)
     criterion = EDMLoss()
     model = model.to(device)
@@ -91,6 +92,7 @@ def start_train(params: TrainParams):
     params.save_params(os.path.join(params.experiment_dir_name, 'params.json'))
 
     for e in range(params.num_epoch):
+        print("epoch: {}".format(e))
         train_loss = train(model=model, loader=train_loader, optimizer=optimizer, criterion=criterion,
                            writer=writer, global_step=len(train_loader.dataset) * e,
                            name=f"{params.experiment_dir_name}_by_batch")
@@ -99,15 +101,18 @@ def start_train(params: TrainParams):
                             name=f"{params.experiment_dir_name}_by_batch")
 
         model_name = f"emd_loss_epoch_{e}_train_{train_loss}_{val_loss}.pth"
-        torch.save(model.module.state_dict(), os.path.join(params.experiment_dir_name, model_name))
+        torch.save(model.state_dict(), os.path.join(params.experiment_dir_name, model_name))
+        print("Model saved. ")
         writer.add_scalar(f"{params.experiment_dir_name}_by_epoch/train_loss", train_loss, global_step=e)
         writer.add_scalar(f"{params.experiment_dir_name}_by_epoch/val_loss", val_loss, global_step=e)
-
+    
+    print("Training done. ")
     writer.export_scalars_to_json(os.path.join(params.experiment_dir_name, 'all_scalars.json'))
     writer.close()
 
 
 def start_check_model(params: ValidateParams):
+    print("Start checking model...")
     val_loader, test_loader = _create_val_data_part(params)
     model = NIMA()
     model.load_state_dict(torch.load(params.path_to_model_weight))
@@ -118,4 +123,5 @@ def start_check_model(params: ValidateParams):
 
     val_loss = validate(model=model, loader=val_loader, criterion=criterion)
     test_loss = validate(model=model, loader=test_loader, criterion=criterion)
+    print("Checking done. ")
     return val_loss, test_loss
