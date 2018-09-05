@@ -2,6 +2,26 @@
 
 PyTorch implementation of [Neural IMage Assessment](https://arxiv.org/abs/1709.05424) by Hossein Talebi and Peyman Milanfar. You can learn more from [this post at Google Research Blog](https://research.googleblog.com/2017/12/introducing-nima-neural-image-assessment.html). 
 
+---
+
+## Change Log
+Some automated bash scripts are added according to the README file, which work well on Ubuntu 14.04 and would perhaps make it more convenient to train and evaluate the model. 
+
+For the usage of the scripts, try:
+```
+sh train.sh -h
+sh validate.sh -h
+sh predict.sh -h
+```
+You may have to use "sudo" to assign permissions
+
+#### Note that when the network condition is not so good, use
+```
+sh train.sh -P false
+```
+#### to disable the downloading of the pretrain-model
+
+---
 
 ## Installing
 
