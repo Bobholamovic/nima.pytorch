@@ -21,6 +21,8 @@ sh train.sh -P false
 ```
 #### to disable the downloading of the pretrain-model
 
+To obtain the AVA dataset, you can try this [crawler](https://github.com/Bobholamovic/ava_downloader)
+
 ---
 
 ## Installing
