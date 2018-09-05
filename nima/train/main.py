@@ -114,7 +114,7 @@ def start_train(params: TrainParams, pretrained_model):
 def start_check_model(params: ValidateParams):
     print("Start checking model...")
     val_loader, test_loader = _create_val_data_part(params)
-    model = NIMA()
+    model = NIMA(pretrained_base_model=False)
     model.load_state_dict(torch.load(params.path_to_model_weight))
     criterion = EDMLoss()
 
